@@ -1,0 +1,56 @@
+# Supabase local / self-hosted configuration.
+# Boots the full Supabase stack in Docker via `supabase start`.
+# Docs: https://supabase.com/docs/guides/local-development
+
+project_id = "tkep2"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+shadow_port = 54320
+major_version = 17
+
+[db.pooler]
+enabled = false
+port = 54329
+pool_mode = "transaction"
+
+[studio]
+enabled = true
+port = 54323
+api_url = "http://127.0.0.1"
+
+# Inbucket catches all outbound mail locally (signup confirmations, magic links).
+[inbucket]
+enabled = true
+port = 54324
+
+[storage]
+enabled = true
+file_size_limit = "50MiB"
+
+[auth]
+enabled = true
+# For a public deployment set this to your real site URL.
+site_url = "http://127.0.0.1:3000"
+additional_redirect_urls = ["http://127.0.0.1:3000", "http://localhost:3000"]
+jwt_expiry = 3600
+enable_refresh_token_rotation = true
+refresh_token_reuse_interval = 10
+enable_signup = true
+
+[auth.email]
+enable_signup = true
+double_confirm_changes = true
+# Local dev convenience: don't require email confirmation to sign in.
+# Turn this ON for any real/public deployment.
+enable_confirmations = false
+
+[analytics]
+enabled = false

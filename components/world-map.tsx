@@ -206,12 +206,17 @@ function matchCountryToFeature(countryId: string, feature: any): boolean {
     return true
   }
 
-  // Try name patterns as fallback
+  // Name-pattern fallback. The bundled world-atlas 110m dataset only exposes
+  // `properties.name` (plus a numeric `id`), so include that first. Guard
+  // against an empty feature name, otherwise `pattern.includes("")` matches
+  // everything and every feature resolves to the first game country.
   if (mapping.name_patterns) {
-    const featureName = (props.NAME || props.NAME_EN || props.ADMIN || "").toLowerCase()
-    return mapping.name_patterns.some(
-      (pattern) => featureName.includes(pattern.toLowerCase()) || pattern.toLowerCase().includes(featureName),
-    )
+    const featureName = (props.name || props.NAME || props.NAME_EN || props.ADMIN || "").toLowerCase().trim()
+    if (!featureName) return false
+    return mapping.name_patterns.some((pattern) => {
+      const p = pattern.toLowerCase()
+      return featureName === p || featureName.includes(p) || p.includes(featureName)
+    })
   }
 
   return false
@@ -268,7 +273,9 @@ export function WorldMap({ currentCountry, clearedCountries }: Props) {
   /* ---- Load TopoJSON data ---- */
   useEffect(() => {
     setLoading(true)
-    d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json")
+    // Served locally from /public so the app has no runtime CDN dependency
+    // (important for self-hosting / offline use).
+    d3.json("/countries-110m.json")
       .then((world: any) => {
         const countries = topojson.feature(world, world.objects.countries) as any
 

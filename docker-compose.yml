@@ -1,0 +1,26 @@
+# ---------------------------------------------------------------------------
+# Runs the TKEP2.0 (World Wipe) Next.js app in a container.
+#
+# The Supabase backend runs separately (see docs/SELF_HOSTING.md):
+#   - locally via the Supabase CLI (`supabase start`), or
+#   - via the official Supabase self-hosting Docker Compose stack.
+#
+# Because Supabase is called from the browser, NEXT_PUBLIC_SUPABASE_URL must be
+# reachable from the *user's browser* (e.g. http://127.0.0.1:54321 for a local
+# CLI stack, or your public https URL in production). These values are baked
+# into the client bundle at build time, so they are passed as build args.
+# Values are read from a local .env file (copy .env.example -> .env).
+# ---------------------------------------------------------------------------
+services:
+  web:
+    build:
+      context: .
+      args:
+        NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+    image: tkep2-web
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production

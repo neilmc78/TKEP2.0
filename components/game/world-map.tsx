@@ -39,10 +39,8 @@ export function WorldMap({ allCountries, currentCountryId, userProgress }: World
       .translate([width / 2, height / 2])
     const path = d3.geoPath().projection(projection)
 
-    // Fetch TopoJSON data
-    // IMPORTANT: Replace this with a valid URL to a TopoJSON file (e.g., from Natural Earth Data)
-    // Example: "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json"
-    d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json").then((world: any) => {
+    // TopoJSON served locally from /public (no runtime CDN dependency).
+    d3.json("/countries-110m.json").then((world: any) => {
       const countries = topojson.feature(world, world.objects.countries) as any
 
       // Filter countries to only show cleared ones and the current one
