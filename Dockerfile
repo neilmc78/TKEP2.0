@@ -23,8 +23,13 @@ RUN pnpm install --frozen-lockfile
 FROM base AS builder
 ARG NEXT_PUBLIC_SUPABASE_URL
 ARG NEXT_PUBLIC_SUPABASE_ANON_KEY
+# Optional: when set, the app proxies Supabase API paths to this upstream so the
+# browser only ever talks to the app origin (single-origin, Funnel-friendly).
+# Evaluated at build time, so it must be a build arg.
+ARG SUPABASE_INTERNAL_URL
 ENV NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL
 ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY
+ENV SUPABASE_INTERNAL_URL=$SUPABASE_INTERNAL_URL
 ENV NEXT_TELEMETRY_DISABLED=1
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
